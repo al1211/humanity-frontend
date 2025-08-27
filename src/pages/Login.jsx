@@ -27,7 +27,9 @@ export default function Login() {
       api.defaults.headers.common["Authorization"] = `Bearer ${data.token}`;
 
   
-      await fetchMe();
+     if (data.user) {
+              useAuth.setState({ user: data.user, token: data.token });
+             }
 
       navigate("/dashboard");
     } catch (err) {

@@ -25,8 +25,11 @@ export default function Signup() {
       const {data} = await api.post(`/auth/register`, formData);
       localStorage.setItem("token",data.token);
        api.defaults.headers.common["Authorization"] = `Bearer ${data.token}`;
-      setMessage( "Signup successful!");
-      await fetchMe();
+       if (data.user) {
+         useAuth.setState({ user: data.user, token: data.token });
+        }
+        setMessage( "Signup successful!");
+     
       navigate("/dashboard");
     } catch (err) {
       setMessage(err.response?.data?.message || "Signup failed.");
@@ -96,10 +99,10 @@ export default function Signup() {
             Log In
           </Link>
         </p>
-      </div>
       {message && (
         <p className="text-center text-sm text-red-500 mb-4">{message}</p>
       )}
+      </div>
     </div>
   );
 }
