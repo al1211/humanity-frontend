@@ -2,6 +2,7 @@ import { useState } from "react";
 import React from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { api } from "../api/api";
 
 export default function Signup() {
   const [formData, setFormData] = useState({
@@ -19,7 +20,7 @@ export default function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/register", formData);
+      const res = await axios.post(`${api}/auth/`, formData);
       setMessage(res.data.message || "Signup successful!");
     } catch (err) {
       setMessage(err.response?.data?.message || "Signup failed.");
