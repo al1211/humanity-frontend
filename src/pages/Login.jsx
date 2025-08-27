@@ -1,21 +1,37 @@
 import React, { useState } from "react";
 import { useAuth } from "../store/useAuth";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { api } from "../api/api.js";   // <-- make sure this import is here
 
 export default function Login() {
-  const { login, loading } = useAuth();
-  const [email, setEmail] = useState("admin@example.com");
-  const [password, setPassword] = useState("password");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  const { fetchMe, loading } = useAuth();
 
   const onSubmit = async (e) => {
     e.preventDefault();
     setError("");
+
     try {
-      await login(email, password);
-      window.location.href = "/";
-    } catch (e) {
-      setError(e.response?.data?.message || "Login failed");
+ 
+      const { data } = await api.post("/auth/login", { email, password });
+
+     
+      localStorage.setItem("token", data.token);
+      console.log(data)
+
+     
+      api.defaults.headers.common["Authorization"] = `Bearer ${data.token}`;
+
+  
+      await fetchMe();
+
+      navigate("/dashboard");
+    } catch (err) {
+      setError(err.response?.data?.message || "Login failed");
     }
   };
 
@@ -59,7 +75,7 @@ export default function Login() {
 
         <p className="text-center text-sm text-gray-600 mt-4">
           Don’t have an account?{" "}
-          <Link to="/sinup"className="text-blue-600 hover:underline">
+          <Link to="/sinup" className="text-blue-600 hover:underline">
             Sign Up
           </Link>
         </p>

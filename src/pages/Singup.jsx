@@ -1,7 +1,8 @@
 import { useState } from "react";
+import { useAuth } from "../store/useAuth.js";
 import React from "react";
-import axios from "axios";
-import { Link } from "react-router-dom";
+
+import { Link, useNavigate } from "react-router-dom";
 import { api } from "../api/api";
 
 export default function Signup() {
@@ -12,7 +13,8 @@ export default function Signup() {
     role: "user",
   });
   const [message, setMessage] = useState("");
-
+  const navigate = useNavigate();
+  const { fetchMe } = useAuth();
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -20,20 +22,25 @@ export default function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(`${api}/auth/`, formData);
-      setMessage(res.data.message || "Signup successful!");
+      const {data} = await api.post(`/auth/register`, formData);
+      localStorage.setItem("token",data.token);
+       api.defaults.headers.common["Authorization"] = `Bearer ${data.token}`;
+      setMessage( "Signup successful!");
+      await fetchMe();
+      navigate("/dashboard");
     } catch (err) {
       setMessage(err.response?.data?.message || "Signup failed.");
+      console.log(err);
     }
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
       <div className="w-full max-w-md bg-white shadow-lg rounded-2xl p-6">
-        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Create Account</h2>
-        {message && (
-          <p className="text-center text-sm text-red-500 mb-4">{message}</p>
-        )}
+        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
+          Create Account
+        </h2>
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="text"
@@ -90,6 +97,9 @@ export default function Signup() {
           </Link>
         </p>
       </div>
+      {message && (
+        <p className="text-center text-sm text-red-500 mb-4">{message}</p>
+      )}
     </div>
   );
 }

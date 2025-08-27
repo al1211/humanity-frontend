@@ -1,13 +1,11 @@
-import axios from 'axios';
-
+import axios from "axios";
 
 export const api = axios.create({
-baseURL: 'https://humanity-backend.onrender.com/api'
+  baseURL: "https://humanity-backend.onrender.com/api",
 });
 
-
 api.interceptors.request.use((config) => {
-const token = localStorage.getItem('token');
-if (token) config.headers.Authorization = `Bearer ${token}`;
-return config;
+  const token = localStorage.getItem("token");
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
 });

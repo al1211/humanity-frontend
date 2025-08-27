@@ -12,7 +12,7 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/sinup" element={<Signup />} />
         <Route element={<ProtectedRoute />}>
-          <Route path="/" element={<Dashboard />} />
+          <Route path="/dashboard" element={<Dashboard />} />
         </Route>
       </Routes>
     </BrowserRouter>
